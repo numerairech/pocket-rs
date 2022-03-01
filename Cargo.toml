@@ -16,3 +16,4 @@ members = [
 [dependencies]
 pocket-utils = { version = "0.1.0", path = "./pocket-utils" }
 sha2 = "0.10.2"
+thiserror = "1.0.30"
