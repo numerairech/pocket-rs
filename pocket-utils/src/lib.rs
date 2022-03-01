@@ -1,3 +1,5 @@
+/// Extracts the public key from a 64-byte long ed25519 private key
+/// The public key from a ed25519 private key will always be the last 64 characters.
 pub fn public_key_from_private(private_key: String) -> String {
     private_key.chars().skip(64).collect()
 }
