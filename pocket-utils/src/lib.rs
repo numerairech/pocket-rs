@@ -1,8 +1,6 @@
 use sha2::{Digest, Sha256};
 
 pub fn address_from_public_key(public_key: String) -> String {
-    let public_key = public_key.clone();
-
     let result = Sha256::digest(hex::decode(public_key).expect("Invalid public key"));
     let mut buf = [0u8; 64];
 
@@ -14,7 +12,6 @@ pub fn address_from_public_key(public_key: String) -> String {
 /// Extracts the public key from a 64-byte long ed25519 private key
 /// The public key from a ed25519 private key will always be the last 64 characters.
 pub fn public_key_from_private(private_key: String) -> String {
-    let private_key = private_key.clone();
     private_key.chars().skip(64).collect()
 }
 
