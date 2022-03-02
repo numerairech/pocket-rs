@@ -26,6 +26,14 @@ impl KeyManager {
         KeyManager { key_pair, address }
     }
 
+    pub fn new_from_random() -> Self {
+        let key_pair = KeyPair::from_seed(Seed::generate());
+
+        let address = address_from_public_key(hex::encode(key_pair.pk.to_vec())).unwrap();
+
+        KeyManager { key_pair, address }
+    }
+
     pub fn get_private_key(&self) -> String {
         hex::encode(self.key_pair.sk.to_vec())
     }
