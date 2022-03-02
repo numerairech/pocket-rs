@@ -1,15 +1,7 @@
 use sha2::{Digest, Sha256};
-use thiserror::Error;
 
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error("Invalid private key length")]
-    InvalidPrivateKeyLength,
-    #[error("Invalid public key length")]
-    InvalidPublicKeyLength,
-    #[error("Invalid public key format (expected hex)")]
-    InvalidPublicKeyFormat,
-}
+pub mod errors;
+use errors::Error;
 
 /// Computes the address of an ed25519 public key.
 pub fn address_from_public_key(public_key: String) -> Result<String, Error> {
