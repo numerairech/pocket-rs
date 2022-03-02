@@ -7,9 +7,9 @@ pub struct KeyManager {
 }
 
 impl KeyManager {
-    pub fn new(private_key: String) -> Self {
+    pub fn new(private_key: &str) -> Self {
         let mut bytes = [0u8; 64];
-        hex::decode_to_slice(private_key.clone(), &mut bytes).expect("Invalid private key");
+        hex::decode_to_slice(private_key, &mut bytes).expect("Invalid private key");
 
         let key_pair = KeyPair::from_slice(&bytes).unwrap();
 
@@ -63,7 +63,7 @@ mod tests {
             "b243b27bc9fbe5580457a46370ae5f03a6f6753633e51efdaf2cf534fdc26cc3".to_string();
         let address = "b50a6e20d3733fb89631ae32385b3c85c533c560".to_string();
 
-        let key_manager = KeyManager::new(private_key.clone());
+        let key_manager = KeyManager::new(&private_key);
 
         assert_eq!(key_manager.get_private_key(), private_key);
         assert_eq!(key_manager.get_public_key(), public_key);
@@ -77,10 +77,10 @@ mod tests {
             "b243b27bc9fbe5580457a46370ae5f03a6f6753633e51efdaf2cf534fdc26cc3".to_string();
         let address = "b50a6e20d3733fb89631ae32385b3c85c533c560".to_string();
 
-        let mut out = [0u8; 64];
-        hex::decode_to_slice(private_key.clone(), &mut out);
+        let mut bytes = [0u8; 64];
+        hex::decode_to_slice(private_key.clone(), &mut bytes).unwrap();
 
-        let key_manager = KeyManager::new_from_slice(&out);
+        let key_manager = KeyManager::new_from_slice(&bytes);
 
         assert_eq!(key_manager.get_private_key(), private_key);
         assert_eq!(key_manager.get_public_key(), public_key);
@@ -91,7 +91,7 @@ mod tests {
     fn it_signs_message() {
         let private_key: String = "1f8cbde30ef5a9db0a5a9d5eb40536fc9defc318b8581d543808b7504e0902bcb243b27bc9fbe5580457a46370ae5f03a6f6753633e51efdaf2cf534fdc26cc3".to_string();
         let signed_message = "628db0d268cc98fa56fcf2a307ff480b00911f6f9a71f10524d8fb4483230fdd9e857e194bd795977193bab4ea136dcfc09529fdbe8cab3a5e2106b5edd05109";
-        let key_manager = KeyManager::new(private_key.clone());
+        let key_manager = KeyManager::new(&private_key);
 
         assert_eq!(key_manager.sign("deadbeef".to_string()), signed_message)
     }
