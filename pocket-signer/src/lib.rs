@@ -13,7 +13,7 @@ impl KeyManager {
 
         let key_pair = KeyPair::from_slice(&bytes).unwrap();
 
-        let address = address_from_public_key(hex::encode(key_pair.pk.to_vec())).unwrap();
+        let address = address_from_public_key(&hex::encode(key_pair.pk.to_vec())).unwrap();
 
         KeyManager { key_pair, address }
     }
@@ -21,7 +21,7 @@ impl KeyManager {
     pub fn new_from_slice(bytes: &[u8]) -> Self {
         let key_pair = KeyPair::from_slice(bytes).unwrap();
 
-        let address = address_from_public_key(hex::encode(key_pair.pk.to_vec())).unwrap();
+        let address = address_from_public_key(&hex::encode(key_pair.pk.to_vec())).unwrap();
 
         KeyManager { key_pair, address }
     }
@@ -29,7 +29,7 @@ impl KeyManager {
     pub fn new_from_random() -> Self {
         let key_pair = KeyPair::from_seed(Seed::generate());
 
-        let address = address_from_public_key(hex::encode(key_pair.pk.to_vec())).unwrap();
+        let address = address_from_public_key(&hex::encode(key_pair.pk.to_vec())).unwrap();
 
         KeyManager { key_pair, address }
     }
