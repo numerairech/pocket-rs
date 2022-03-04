@@ -1,8 +1,15 @@
-use ed25519_compact::{KeyPair, Seed};
+extern crate ed25519_dalek;
+extern crate hex;
+extern crate rand_core;
+
+use rand_core::OsRng;
+
+use ed25519_dalek::*;
+
 use pocket_utils::address_from_public_key;
 
 pub struct KeyManager {
-    key_pair: KeyPair,
+    keypair: Keypair,
     address: String,
 }
 
@@ -11,35 +18,39 @@ impl KeyManager {
         let mut bytes = [0u8; 64];
         hex::decode_to_slice(private_key, &mut bytes).expect("Invalid private key");
 
-        let key_pair = KeyPair::from_slice(&bytes).unwrap();
+        let keypair = Keypair::from_bytes(&bytes).unwrap();
 
-        let address = address_from_public_key(&hex::encode(key_pair.pk.to_vec())).unwrap();
+        let address = address_from_public_key(&hex::encode(keypair.public.to_bytes())).unwrap();
 
-        KeyManager { key_pair, address }
+        KeyManager { keypair, address }
     }
 
     pub fn new_from_slice(bytes: &[u8]) -> Self {
-        let key_pair = KeyPair::from_slice(bytes).unwrap();
+        let keypair = Keypair::from_bytes(bytes).unwrap();
 
-        let address = address_from_public_key(&hex::encode(key_pair.pk.to_vec())).unwrap();
+        let address = address_from_public_key(&hex::encode(keypair.public.to_bytes())).unwrap();
 
-        KeyManager { key_pair, address }
+        KeyManager { keypair, address }
     }
 
     pub fn new_from_random() -> Self {
-        let key_pair = KeyPair::from_seed(Seed::generate());
+        let keypair: Keypair = Keypair::generate(&mut OsRng);
 
-        let address = address_from_public_key(&hex::encode(key_pair.pk.to_vec())).unwrap();
+        let address = address_from_public_key(&hex::encode(keypair.public.to_bytes())).unwrap();
 
-        KeyManager { key_pair, address }
+        KeyManager { keypair, address }
     }
 
     pub fn get_private_key(&self) -> String {
-        hex::encode(self.key_pair.sk.to_vec())
+        format!(
+            "{}{}",
+            hex::encode(self.keypair.secret.to_bytes()),
+            hex::encode(self.keypair.public.to_bytes())
+        )
     }
 
     pub fn get_public_key(&self) -> String {
-        hex::encode(self.key_pair.pk.to_vec())
+        hex::encode(self.keypair.public.to_bytes())
     }
 
     pub fn get_address(&self) -> String {
@@ -47,7 +58,10 @@ impl KeyManager {
     }
 
     pub fn sign(&self, message: String) -> String {
-        hex::encode(self.key_pair.sk.sign(message, None).to_vec())
+        self.keypair
+            .sign(&hex::decode(message).unwrap())
+            .to_string()
+            .to_lowercase()
     }
 }
 
@@ -90,7 +104,7 @@ mod tests {
     #[test]
     fn it_signs_message() {
         let private_key: String = "1f8cbde30ef5a9db0a5a9d5eb40536fc9defc318b8581d543808b7504e0902bcb243b27bc9fbe5580457a46370ae5f03a6f6753633e51efdaf2cf534fdc26cc3".to_string();
-        let signed_message = "628db0d268cc98fa56fcf2a307ff480b00911f6f9a71f10524d8fb4483230fdd9e857e194bd795977193bab4ea136dcfc09529fdbe8cab3a5e2106b5edd05109";
+        let signed_message = "5d04dfc0d0e579d815f761b452c7d01e5f20a71b9fb66dbbeb1959cffed9da0a621ee06dfd11171757f9c9541768eaf59cce75ac4acc1ad122556ec26e166108";
         let key_manager = KeyManager::new(&private_key);
 
         assert_eq!(key_manager.sign("deadbeef".to_string()), signed_message)
