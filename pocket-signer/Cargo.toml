@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 pocket-utils = { version = "0.1.0", path = "../pocket-utils" }
-ed25519-compact = "0.1"
 hex = "0.4.3"
+ed25519-dalek = "1.0.0"
+rand_core = "0.5.0"
