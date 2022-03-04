@@ -18,9 +18,8 @@ pub fn address_from_public_key(public_key: &str) -> Result<String, Error> {
     };
 
     let result = Sha256::digest(decoded_public_key);
-    let mut buf = [0u8; 64];
 
-    let address = base16ct::lower::encode_str(&result, &mut buf).unwrap();
+    let address = hex::encode(result);
 
     Ok(address.to_string().chars().take(40).collect())
 }
