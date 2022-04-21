@@ -49,7 +49,7 @@ impl Default for PocketProviderConfig {
     fn default() -> Self {
         Self {
             rpc_url: DEFAULT_PROVIDER_URL.to_string(),
-            timeout: Some(1000),
+            timeout: Some(5000),
         }
     }
 }
@@ -64,10 +64,12 @@ pub enum PocketProviderError {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     #[tokio::test]
     async fn it_gets_blockheight() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
+        let provider = PocketProvider::new(PocketProviderConfig::default());
+
+        let height = provider.get_block_height().await.unwrap();
     }
 }
