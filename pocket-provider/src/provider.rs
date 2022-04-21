@@ -1,10 +1,11 @@
 use reqwest::{Client, ClientBuilder};
+use std::collections::HashMap;
 use std::time::Duration;
 use thiserror::Error;
 
 use crate::constants::{DEFAULT_PROVIDER_URL, DEFAULT_TIMEOUT};
 use crate::routes::V1RpcRoutes;
-use crate::types::QueryHeightResponse;
+use crate::types::*;
 
 #[derive(Clone, Debug)]
 pub struct PocketProvider {
@@ -27,7 +28,7 @@ impl PocketProvider {
         }
     }
 
-    pub async fn get_block_height(&self) -> Result<QueryHeightResponse, PocketProviderError> {
+    pub async fn get_block_height(&self) -> Result<i32, PocketProviderError> {
         let url = V1RpcRoutes::QueryHeight.url(&self.rpc_url);
 
         let res = self.client.post(url).send().await?;
@@ -35,7 +36,21 @@ impl PocketProvider {
 
         let resp: QueryHeightResponse = serde_json::from_str(&text)?;
 
-        Ok(resp)
+        Ok(resp.height)
+    }
+
+    pub async fn get_balance(&self, address: &str) -> Result<u128, PocketProviderError> {
+        let url = V1RpcRoutes::QueryBalance.url(&self.rpc_url);
+
+        let mut body = HashMap::new();
+        body.insert("address", address);
+
+        let res = self.client.post(url).json(&body).send().await?;
+        let text = res.text().await?;
+
+        let resp: QueryBalanceResponse = serde_json::from_str(&text)?;
+
+        Ok(resp.balance)
     }
 }
 
