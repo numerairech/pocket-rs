@@ -2,7 +2,7 @@ use reqwest::{Client, ClientBuilder};
 use std::time::Duration;
 use thiserror::Error;
 
-use crate::constants::DEFAULT_TIMEOUT;
+use crate::constants::{DEFAULT_PROVIDER_URL, DEFAULT_TIMEOUT};
 use crate::routes::V1RpcRoutes;
 use crate::types::QueryHeightResponse;
 
@@ -41,9 +41,17 @@ impl PocketProvider {
 
 #[derive(Clone, Debug)]
 pub struct PocketProviderConfig {
-    pub dispatchers: Vec<String>,
     pub rpc_url: String,
     pub timeout: Option<u64>,
+}
+
+impl Default for PocketProviderConfig {
+    fn default() -> Self {
+        Self {
+            rpc_url: DEFAULT_PROVIDER_URL.to_string(),
+            timeout: Some(1000),
+        }
+    }
 }
 
 #[derive(Debug, Error)]
@@ -56,8 +64,9 @@ pub enum PocketProviderError {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn it_works() {
+
+    #[tokio::test]
+    async fn it_gets_blockheight() {
         let result = 2 + 2;
         assert_eq!(result, 4);
     }
