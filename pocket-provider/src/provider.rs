@@ -28,7 +28,7 @@ impl PocketProvider {
     }
 
     pub async fn get_block_height(&self) -> Result<QueryHeightResponse, PocketProviderError> {
-        let url = V1RpcRoutes::V1QueryHeight.url(&self.rpc_url);
+        let url = V1RpcRoutes::QueryHeight.url(&self.rpc_url);
 
         let res = self.client.post(url).send().await?;
         let text = res.text().await?;
