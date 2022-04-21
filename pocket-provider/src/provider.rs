@@ -13,11 +13,9 @@ pub struct PocketProvider {
 impl PocketProvider {
     pub fn new(cfg: PocketProviderConfig) -> Self {
         let mut builder = ClientBuilder::new();
-        if let Some(timeout) = cfg.timeout {
-            builder = builder.timeout(Duration::from_millis(timeout));
-        } else {
-            builder = builder.timeout(Duration::from_millis(DEFAULT_TIMEOUT));
-        }
+        builder = builder.timeout(Duration::from_millis(
+            cfg.timeout.unwrap_or(DEFAULT_TIMEOUT),
+        ));
 
         let client = builder.build().unwrap();
 
