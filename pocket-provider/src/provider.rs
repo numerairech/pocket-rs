@@ -1,12 +1,14 @@
 use reqwest::{Client, ClientBuilder};
 use std::time::Duration;
+use thiserror::Error;
 
 use crate::constants::DEFAULT_TIMEOUT;
+use crate::routes::V1RpcRoutes;
+use crate::types::QueryHeightResponse;
 
 #[derive(Clone, Debug)]
 pub struct PocketProvider {
     client: Client,
-    dispatchers: Vec<String>,
     rpc_url: String,
 }
 
@@ -21,9 +23,19 @@ impl PocketProvider {
 
         Self {
             client,
-            dispatchers: cfg.dispatchers,
             rpc_url: cfg.rpc_url,
         }
+    }
+
+    pub async fn get_block_height(&self) -> Result<QueryHeightResponse, PocketProviderError> {
+        let url = V1RpcRoutes::V1QueryHeight.url(&self.rpc_url);
+
+        let res = self.client.post(url).send().await?;
+        let text = res.text().await?;
+
+        let resp: QueryHeightResponse = serde_json::from_str(&text)?;
+
+        Ok(resp)
     }
 }
 
@@ -32,6 +44,14 @@ pub struct PocketProviderConfig {
     pub dispatchers: Vec<String>,
     pub rpc_url: String,
     pub timeout: Option<u64>,
+}
+
+#[derive(Debug, Error)]
+pub enum PocketProviderError {
+    #[error(transparent)]
+    Reqwest(#[from] reqwest::Error),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
 }
 
 #[cfg(test)]
