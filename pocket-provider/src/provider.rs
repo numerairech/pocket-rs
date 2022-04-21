@@ -61,15 +61,3 @@ pub enum PocketProviderError {
     #[error(transparent)]
     SerdeJson(#[from] serde_json::Error),
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn it_gets_blockheight() {
-        let provider = PocketProvider::new(PocketProviderConfig::default());
-
-        let height = provider.get_block_height().await.unwrap();
-    }
-}
