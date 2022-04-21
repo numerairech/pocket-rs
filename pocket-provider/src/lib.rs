@@ -1,8 +1,5 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
-}
+pub mod constants;
+pub mod provider;
+pub mod routes;
+pub mod types;
+pub use provider::{PocketProvider, PocketProviderConfig};
