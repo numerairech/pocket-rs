@@ -52,6 +52,22 @@ impl PocketProvider {
 
         Ok(resp.balance)
     }
+
+    pub async fn get_app(&self, address: &str) -> Result<Application, PocketProviderError> {
+        let url = V1RpcRoutes::QueryApp.url(&self.rpc_url);
+
+        let mut body = HashMap::new();
+        body.insert("address", address);
+
+        let res = self.client.post(url).json(&body).send().await?;
+        let text = res.text().await?;
+
+        println!("{}", text);
+
+        let resp: Application = serde_json::from_str(&text)?;
+
+        Ok(resp)
+    }
 }
 
 #[derive(Clone, Debug)]
