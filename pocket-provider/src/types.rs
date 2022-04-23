@@ -22,3 +22,15 @@ pub struct Application {
     pub max_relays: String,
     pub unstaking_time: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Node {
+    pub address: String,
+    pub chains: Vec<String>,
+    pub jailed: bool,
+    pub public_key: String,
+    pub service_url: String,
+    pub status: i32,
+    pub tokens: i128,
+    pub unstaking_time: String,
+}
